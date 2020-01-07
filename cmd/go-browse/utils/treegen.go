@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/bern/go-browse/cmd/go-browse/models"
@@ -60,15 +61,15 @@ func PrintNode(root models.Node, level int) {
 }
 
 func PrintStylesheet(sheet models.Stylesheet) {
-	for _, rule := range sheet.Rules {
-		PrintRule(rule)
+	for i, rule := range sheet.Rules {
+		PrintRule(rule, i)
 	}
 }
 
-func PrintRule(rule models.Rule) {
+func PrintRule(rule models.Rule, index int) {
+	fmt.Printf("**Rule #%s**\n", strconv.Itoa(index))
+	fmt.Println("Selectors")
 	for _, selector := range rule.Selectors {
-		fmt.Println("Selector:")
-
 		if selector.TagName != nil {
 			fmt.Println("Type:", *selector.TagName)
 		} else {
@@ -82,6 +83,13 @@ func PrintRule(rule models.Rule) {
 		if selector.Classes != nil {
 			fmt.Println("Classes:", strings.Join(*selector.Classes, ", "))
 		}
+
+		fmt.Println()
 	}
-	fmt.Println()
+	fmt.Println("Declarations")
+	for _, declaration := range rule.Declarations {
+		fmt.Println("Name:", declaration.Name)
+		fmt.Println("Value:", declaration.Value)
+		fmt.Println()
+	}
 }

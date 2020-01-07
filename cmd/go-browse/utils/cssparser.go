@@ -1,8 +1,6 @@
 package utils
 
 import (
-	"fmt"
-
 	"github.com/bern/go-browse/cmd/go-browse/models"
 )
 
@@ -40,8 +38,6 @@ func (p *CSSParser) ParseRules() models.Stylesheet {
 			break
 		}
 
-		// TODO: Support multiple comma-separated selectors
-
 		/*
 			div#about.main__info.main__info--blue {
 				color: blue;
@@ -49,13 +45,16 @@ func (p *CSSParser) ParseRules() models.Stylesheet {
 		*/
 
 		// parse selector
+		// TODO: Support multiple comma-separated selectors
 		selector := p.ParseSelector()
 
 		// parse declarations
+		declarations := p.ParseDeclarations()
+
 		// create a rule
 		stylesheet.Rules = append(stylesheet.Rules, models.Rule{
 			Selectors:    []models.Selector{selector},
-			Declarations: make([]models.Declaration, 0),
+			Declarations: declarations,
 		})
 	}
 
@@ -69,8 +68,6 @@ func (p *CSSParser) ParseSelector() models.Selector {
 		or pseudo-classes, in any order.
 	*/
 
-	fmt.Println("parsing selector")
-
 	selector := models.Selector{}
 
 	// if the first character is neither a . nor a # nor a * then it is the type selector
@@ -81,37 +78,24 @@ func (p *CSSParser) ParseSelector() models.Selector {
 		selector.TagName = &tagName
 	}
 
-	fmt.Println("finished parsing tag name")
-
 	classes := make([]string, 0)
 
 	for {
-		fmt.Println("a")
-
 		p.Parser.ConsumeWhitespace()
 		if p.Parser.NextChar() == "{" {
-			p.Parser.ConsumeChar()
 			break
 		}
 
 		switch p.Parser.NextChar() {
 		case ".":
 			p.Parser.ConsumeChar() // .
-			className := p.Parser.ConsumeWhile(func(s string) bool {
-				return s != "." && s != "#" && s != "{" && s != " " && s != "\n" && s != "\t"
-			})
-
-			fmt.Println("b")
+			className := p.ConsumeSelectorComponent()
 
 			classes = append(classes, className)
 			break
 		case "#":
 			p.Parser.ConsumeChar() // #
-			idName := p.Parser.ConsumeWhile(func(s string) bool {
-				return s != "." && s != "#" && s != "{" && s != " " && s != "\n" && s != "\t"
-			})
-
-			fmt.Println("c")
+			idName := p.ConsumeSelectorComponent()
 
 			selector.ID = &idName
 			break
@@ -127,4 +111,52 @@ func (p *CSSParser) ParseSelector() models.Selector {
 	}
 
 	return selector
+}
+
+func (p *CSSParser) ConsumeSelectorComponent() string {
+	return p.Parser.ConsumeWhile(func(s string) bool {
+		return s != "." && s != "#" && s != "{" && s != " " && s != "\n" && s != "\t"
+	})
+}
+
+func (p *CSSParser) ParseDeclarations() []models.Declaration {
+	declarations := make([]models.Declaration, 0)
+
+	p.Parser.ConsumeChar() // {
+	for {
+		p.Parser.ConsumeWhitespace()
+
+		if p.Parser.EOF() { // TODO: check if this should throw an error??
+			break
+		} else if p.Parser.NextChar() == "}" {
+			p.Parser.ConsumeChar() // }
+			break
+		}
+
+		declaration := p.ParseDeclaration()
+		declarations = append(declarations, declaration)
+	}
+
+	return declarations
+}
+
+func (p *CSSParser) ParseDeclaration() models.Declaration {
+	name := p.Parser.ConsumeWhile(func(s string) bool {
+		return s != ":"
+	})
+
+	p.Parser.ConsumeChar() // :
+	p.Parser.ConsumeWhitespace()
+
+	// TODO: support a number, a string, a percentage, or a hex color code
+	value := p.Parser.ConsumeWhile(func(s string) bool {
+		return s != ";"
+	})
+
+	p.Parser.ConsumeChar() // ;
+
+	return models.Declaration{
+		Name:  name,
+		Value: value,
+	}
 }

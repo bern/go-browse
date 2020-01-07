@@ -1,1 +1,10 @@
 div#about.main__info.main__info--blue {
+  color: blue;
+  height: 300px;
+  width: 200px;
+  font-size: 20px;
+}
+
+.main__button {
+  background-color: #fafafa;
+}
