@@ -94,6 +94,11 @@ func (p *Parser) ParseNodes() []models.Node {
 			break
 		}
 
+		if p.StartsWith("<!--") {
+			p.ParseComment()
+			continue
+		}
+
 		nodes = append(nodes, p.ParseNode())
 	}
 
@@ -107,6 +112,19 @@ func (p *Parser) ParseNode() models.Node {
 		return p.ParseElement()
 	default:
 		return p.ParseText()
+	}
+}
+
+// ParseComment skims over an HTML comment and does not create a node for it
+func (p *Parser) ParseComment() {
+	for {
+		if p.StartsWith("-->") {
+			p.ConsumeChar() // -
+			p.ConsumeChar() // -
+			p.ConsumeChar() // >
+			break
+		}
+		p.ConsumeChar()
 	}
 }
 
