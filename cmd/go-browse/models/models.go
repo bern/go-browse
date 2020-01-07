@@ -47,3 +47,69 @@ type Declaration struct {
 	Name  string
 	Value string // TODO: Extend into multiple types, should also be a slice
 }
+
+type Specificity struct {
+	IDSpecificity      int
+	ClassSpecificity   int
+	ElementSpecificity int
+}
+
+// BySpecificity sorts a slice of selectors with the highest specificty first
+type BySpecificity []Selector
+
+func (a BySpecificity) Len() int {
+	return len(a)
+}
+
+func (a BySpecificity) Less(i, j int) bool {
+	specI := CalculateSpecificity(a[i])
+	specJ := CalculateSpecificity(a[j])
+
+	if specI.IDSpecificity > specJ.IDSpecificity {
+		return true
+	} else if specI.IDSpecificity < specJ.IDSpecificity {
+		return false
+	}
+
+	if specI.ClassSpecificity > specJ.ClassSpecificity {
+		return true
+	} else if specI.ClassSpecificity < specJ.ClassSpecificity {
+		return false
+	}
+
+	if specI.ElementSpecificity > specJ.ElementSpecificity {
+		return true
+	} else if specI.ElementSpecificity < specJ.ElementSpecificity {
+		return false
+	}
+
+	return false
+}
+
+func (a BySpecificity) Swap(i, j int) {
+	a[i], a[j] = a[j], a[i]
+}
+
+func CalculateSpecificity(s Selector) Specificity {
+	idSpecificity := 0
+	classSpecificity := 0
+	elementSpecificity := 0
+
+	if s.ID != nil {
+		idSpecificity = 1
+	}
+
+	if s.Classes != nil {
+		classSpecificity = len(*s.Classes)
+	}
+
+	if s.TagName != nil {
+		elementSpecificity = 1
+	}
+
+	return Specificity{
+		IDSpecificity:      idSpecificity,
+		ClassSpecificity:   classSpecificity,
+		ElementSpecificity: elementSpecificity,
+	}
+}

@@ -60,12 +60,14 @@ func PrintNode(root models.Node, level int) {
 	}
 }
 
+// PrintStylesheet will crawl down a stylesheet and print every rule
 func PrintStylesheet(sheet models.Stylesheet) {
 	for i, rule := range sheet.Rules {
 		PrintRule(rule, i)
 	}
 }
 
+// PrintRule takes a rule and prints outs its selectors and declarations
 func PrintRule(rule models.Rule, index int) {
 	fmt.Printf("**Rule #%s**\n", strconv.Itoa(index))
 	fmt.Println("Selectors")

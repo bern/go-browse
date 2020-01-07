@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"sort"
+
 	"github.com/bern/go-browse/cmd/go-browse/models"
 )
 
@@ -72,6 +74,8 @@ func (p *CSSParser) ParseSelectors() []models.Selector {
 
 		selectors = append(selectors, p.ParseSelector())
 	}
+
+	sort.Sort(models.BySpecificity(selectors))
 	return selectors
 }
 

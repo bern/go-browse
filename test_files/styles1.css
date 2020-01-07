@@ -1,4 +1,4 @@
-div {
+div, .some-class.some-class-2.some-class-3, div#about.main__info.main__info--blue {
   color: blue;
   height: 300px;
   width: 200px;
