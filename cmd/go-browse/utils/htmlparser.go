@@ -108,6 +108,15 @@ func (p *HTMLParser) ParseElement() models.Node {
 	p.assertStringParsed(p.Parser.ConsumeChar(), "<")
 	name = p.Parser.ConsumeName()
 	attrs = p.ParseAttributes()
+
+	// Check for self-closing tag
+	if p.Parser.StartsWith("/>") {
+		p.assertStringParsed(p.Parser.ConsumeChar(), "/")
+		p.assertStringParsed(p.Parser.ConsumeChar(), ">")
+
+		return ElementNode(name, attrs, children)
+	}
+
 	p.assertStringParsed(p.Parser.ConsumeChar(), ">")
 
 	// Contents
@@ -128,7 +137,7 @@ func (p *HTMLParser) ParseAttributes() map[string]string {
 
 	for {
 		p.Parser.ConsumeWhitespace()
-		if p.Parser.NextChar() == ">" {
+		if p.Parser.NextChar() == ">" || p.Parser.StartsWith("/>") {
 			break
 		}
 

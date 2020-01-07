@@ -3,6 +3,7 @@ package utils
 import (
 	"log"
 	"strconv"
+	"strings"
 )
 
 func (p *HTMLParser) expectedStringError(expected ...string) {
@@ -10,14 +11,7 @@ func (p *HTMLParser) expectedStringError(expected ...string) {
 		return
 	}
 
-	expectedStrings := expected[0]
-	for i, expectedString := range expected {
-		if i == 0 {
-			continue
-		}
-
-		expectedStrings += " or " + expectedString
-	}
+	expectedStrings := strings.Join(expected, " or ")
 
 	log.Fatal(
 		"error in parsing file: ", p.FilePath,
