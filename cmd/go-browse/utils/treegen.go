@@ -41,7 +41,11 @@ func PrintNode(root models.Node, level int) {
 		printedValue += fmt.Sprintf("TextNode(\"%s\")", *root.Text)
 		break
 	case models.Element:
-		printedValue += fmt.Sprintf("ElementNode(\"%s\")", root.Element.TagName)
+		printedValue += fmt.Sprintf("ElementNode(\"%s\"", root.Element.TagName)
+		for name, val := range root.Element.Attributes {
+			printedValue += fmt.Sprintf(", %s=\"%s\"", name, val)
+		}
+		printedValue += ")"
 		break
 	default:
 		printedValue += "I'm not sure how to print this node..."
