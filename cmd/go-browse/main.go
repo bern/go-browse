@@ -12,7 +12,8 @@ import (
 func main() {
 	// tests.DrawSomething()
 	// createBasicTree()
-	createBasicParser()
+	// createBasicParser()
+	parseHTMLFile("test1.html")
 }
 
 func createBasicTree() {
@@ -50,22 +51,13 @@ func createBasicParser() {
 	parser.Input = "abc123ABC/>"
 	parser.Pos = 0
 	fmt.Println(parser.ConsumeName())
+}
 
-	parser.Input = "hello</>"
-	parser.Pos = 0
-	helloNode := parser.ParseNode()
-	utils.PrintNode(helloNode, 0)
-
-	parser.Input = "<div height=\"100\" width=\"100\">"
-	parser.Pos = 0
-	divNode := parser.ParseNode()
-	utils.PrintNode(divNode, 0)
-
-	filePath := "test1.html"
-	dat, err := ioutil.ReadFile(filePath)
+func parseHTMLFile(path string) {
+	dat, err := ioutil.ReadFile(path)
 	if err != nil {
-		log.Fatal("failed to open ", filePath)
+		log.Fatal("failed to open ", path)
 	}
-	parentNode := utils.ParseHTML(string(dat))
+	parentNode := utils.ParseHTML(path, string(dat))
 	utils.PrintNode(parentNode, 0)
 }
