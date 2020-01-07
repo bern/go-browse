@@ -23,3 +23,27 @@ type ElementData struct {
 	TagName    string
 	Attributes map[string]string
 }
+
+// Stylesheet represents a set of CSS Rules
+type Stylesheet struct {
+	Rules []Rule
+}
+
+// Rule represents the selectors and declaractions that make a CSS Rule
+type Rule struct {
+	Selectors    []Selector
+	Declarations []Declaration
+}
+
+// Selector represents the mapping for which elements certain CSS Rules should be applied
+type Selector struct {
+	TagName *string
+	ID      *string
+	Classes *[]string
+}
+
+// Declaration represents a <name, value> pair for CSS Properties
+type Declaration struct {
+	Name  string
+	Value string // TODO: Extend into multiple types, should also be a slice
+}

@@ -6,7 +6,7 @@ import (
 	"github.com/bern/go-browse/cmd/go-browse/models"
 )
 
-// HTMLParser represents a parser tied to a specific file
+// HTMLParser represents a parser tied to a specific HTML file
 type HTMLParser struct {
 	FilePath string
 	Parser   *Parser

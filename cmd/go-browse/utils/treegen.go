@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/bern/go-browse/cmd/go-browse/models"
 )
@@ -56,4 +57,31 @@ func PrintNode(root models.Node, level int) {
 	for _, child := range root.Children {
 		PrintNode(child, level+1)
 	}
+}
+
+func PrintStylesheet(sheet models.Stylesheet) {
+	for _, rule := range sheet.Rules {
+		PrintRule(rule)
+	}
+}
+
+func PrintRule(rule models.Rule) {
+	for _, selector := range rule.Selectors {
+		fmt.Println("Selector:")
+
+		if selector.TagName != nil {
+			fmt.Println("Type:", *selector.TagName)
+		} else {
+			fmt.Println("Type: universal")
+		}
+
+		if selector.ID != nil {
+			fmt.Println("ID:", *selector.ID)
+		}
+
+		if selector.Classes != nil {
+			fmt.Println("Classes:", strings.Join(*selector.Classes, ", "))
+		}
+	}
+	fmt.Println()
 }

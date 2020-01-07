@@ -13,7 +13,8 @@ func main() {
 	// tests.DrawSomething()
 	// createBasicTree()
 	// createBasicParser()
-	parseHTMLFile("test1.html")
+	parseHTMLFile("test_files/index1.html")
+	parseCSSFile("test_files/styles1.css")
 }
 
 func createBasicTree() {
@@ -60,4 +61,13 @@ func parseHTMLFile(path string) {
 	}
 	parentNode := utils.ParseHTML(path, string(dat))
 	utils.PrintNode(parentNode, 0)
+}
+
+func parseCSSFile(path string) {
+	dat, err := ioutil.ReadFile(path)
+	if err != nil {
+		log.Fatal("failed to open ", path)
+	}
+	stylesheet := utils.ParseCSS(path, string(dat))
+	utils.PrintStylesheet(stylesheet)
 }
