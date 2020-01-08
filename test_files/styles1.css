@@ -1,5 +1,6 @@
 * {
   font-size: 30px;
+  display: block;
 }
 
 div, .some-class.some-class-2.some-class-3, div#about.main__info.main__info--blue {
@@ -11,4 +12,16 @@ div, .some-class.some-class-2.some-class-3, div#about.main__info.main__info--blu
 
 h1, h2, h3 {
   color: red;
+}
+
+div, h1, h2, h3, p, form, header, footer, section {
+  display: block;
+}
+
+span, a, img {
+  display: inline;
+}
+
+.hidden {
+  display: none;
 }

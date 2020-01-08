@@ -106,6 +106,7 @@ func StyleTree(root models.Node, stylesheet models.Stylesheet) models.StyledNode
 	}
 }
 
+// PrintStyledNode recurses down a StyledNode, printing all elements and their associated styles
 func PrintStyledNode(root models.StyledNode, level int) {
 	printedValue := ""
 	for i := 0; i < level; i++ {
