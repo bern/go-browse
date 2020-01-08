@@ -13,8 +13,9 @@ func main() {
 	// tests.DrawSomething()
 	// createBasicTree()
 	// createBasicParser()
-	parseHTMLFile("test_files/index1.html")
-	parseCSSFile("test_files/styles1.css")
+	// parseHTMLFile("test_files/index1.html")
+	// parseCSSFile("test_files/styles1.css")
+	generateStyleTree("test_files/index1.html", "test_files/styles1.css")
 }
 
 func createBasicTree() {
@@ -70,4 +71,21 @@ func parseCSSFile(path string) {
 	}
 	stylesheet := utils.ParseCSS(path, string(dat))
 	utils.PrintStylesheet(stylesheet)
+}
+
+func generateStyleTree(htmlPath, cssPath string) {
+	dat, err := ioutil.ReadFile(htmlPath)
+	if err != nil {
+		log.Fatal("failed to open ", htmlPath)
+	}
+	parentNode := utils.ParseHTML(htmlPath, string(dat))
+
+	dat, err = ioutil.ReadFile(cssPath)
+	if err != nil {
+		log.Fatal("failed to open ", cssPath)
+	}
+	stylesheet := utils.ParseCSS(cssPath, string(dat))
+
+	styleTree := utils.StyleTree(parentNode, stylesheet)
+	utils.PrintStyledNode(styleTree, 0)
 }

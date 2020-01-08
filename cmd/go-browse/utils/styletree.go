@@ -1,7 +1,9 @@
 package utils
 
 import (
+	"fmt"
 	"sort"
+	"strings"
 
 	"github.com/bern/go-browse/cmd/go-browse/models"
 )
@@ -101,5 +103,44 @@ func StyleTree(root models.Node, stylesheet models.Stylesheet) models.StyledNode
 		Node:            root,
 		SpecifiedValues: specifiedValues,
 		Children:        children,
+	}
+}
+
+func PrintStyledNode(root models.StyledNode, level int) {
+	printedValue := ""
+	for i := 0; i < level; i++ {
+		printedValue += "  "
+	}
+	printedValue += "| -- "
+
+	nodeType := root.Node.NodeType
+	switch nodeType {
+	case models.Text:
+		printedValue += fmt.Sprintf("TextNode(\"%s\")", *root.Node.Text)
+		break
+	case models.Element:
+		printedValue += fmt.Sprintf("ElementNode(\"%s\"", root.Node.Element.TagName)
+		for name, val := range root.Node.Element.Attributes {
+			printedValue += fmt.Sprintf(", %s=\"%s\"", name, val)
+		}
+		printedValue += ")"
+		break
+	default:
+		printedValue += "I'm not sure how to print this node..."
+	}
+
+	printedValue += " ("
+
+	for name, value := range root.SpecifiedValues {
+		printedValue += name + ":" + value + " "
+	}
+
+	printedValue = strings.TrimRight(printedValue, " ")
+	printedValue += ")"
+
+	fmt.Println(printedValue)
+
+	for _, child := range root.Children {
+		PrintStyledNode(child, level+1)
 	}
 }
