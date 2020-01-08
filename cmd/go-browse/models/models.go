@@ -1,5 +1,7 @@
 package models
 
+import "strings"
+
 // NodeType informs us of what kind of data we can expect the node to hold
 type NodeType int
 
@@ -22,6 +24,25 @@ type Node struct {
 type ElementData struct {
 	TagName    string
 	Attributes map[string]string
+}
+
+// ID returns the ID for a given element
+func (e ElementData) ID() *string {
+	if e.Attributes["id"] != "" {
+		id := e.Attributes["id"]
+		return &id
+	}
+	return nil
+}
+
+// Classes returns the class list for a given element
+func (e ElementData) Classes() *[]string {
+	if e.Attributes["class"] != "" {
+		classStr := e.Attributes["class"]
+		classes := strings.Split(classStr, " ")
+		return &classes
+	}
+	return nil
 }
 
 // Stylesheet represents a set of CSS Rules
@@ -48,68 +69,24 @@ type Declaration struct {
 	Value string // TODO: Extend into multiple types, should also be a slice
 }
 
+// PropertyMap represents a collection of CSS properties and their corresponding values
+type PropertyMap map[string]string
+
+// StyledNode is a DOM node that is associated with a map of CSS properties and values
+type StyledNode struct {
+	Node            Node
+	SpecifiedValues PropertyMap
+	Children        []StyledNode
+}
+
+// Specificity represents how specifically a selector applies to a certain element
 type Specificity struct {
 	IDSpecificity      int
 	ClassSpecificity   int
 	ElementSpecificity int
 }
 
-// BySpecificity sorts a slice of selectors with the highest specificty first
-type BySpecificity []Selector
-
-func (a BySpecificity) Len() int {
-	return len(a)
-}
-
-func (a BySpecificity) Less(i, j int) bool {
-	specI := CalculateSpecificity(a[i])
-	specJ := CalculateSpecificity(a[j])
-
-	if specI.IDSpecificity > specJ.IDSpecificity {
-		return true
-	} else if specI.IDSpecificity < specJ.IDSpecificity {
-		return false
-	}
-
-	if specI.ClassSpecificity > specJ.ClassSpecificity {
-		return true
-	} else if specI.ClassSpecificity < specJ.ClassSpecificity {
-		return false
-	}
-
-	if specI.ElementSpecificity > specJ.ElementSpecificity {
-		return true
-	} else if specI.ElementSpecificity < specJ.ElementSpecificity {
-		return false
-	}
-
-	return false
-}
-
-func (a BySpecificity) Swap(i, j int) {
-	a[i], a[j] = a[j], a[i]
-}
-
-func CalculateSpecificity(s Selector) Specificity {
-	idSpecificity := 0
-	classSpecificity := 0
-	elementSpecificity := 0
-
-	if s.ID != nil {
-		idSpecificity = 1
-	}
-
-	if s.Classes != nil {
-		classSpecificity = len(*s.Classes)
-	}
-
-	if s.TagName != nil {
-		elementSpecificity = 1
-	}
-
-	return Specificity{
-		IDSpecificity:      idSpecificity,
-		ClassSpecificity:   classSpecificity,
-		ElementSpecificity: elementSpecificity,
-	}
+type MatchedRule struct {
+	Rule        Rule
+	Specificity Specificity
 }

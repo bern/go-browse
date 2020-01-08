@@ -75,7 +75,7 @@ func (p *CSSParser) ParseSelectors() []models.Selector {
 		selectors = append(selectors, p.ParseSelector())
 	}
 
-	sort.Sort(models.BySpecificity(selectors))
+	sort.Sort(BySpecificity(selectors))
 	return selectors
 }
 
