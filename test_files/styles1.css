@@ -1,6 +1,7 @@
 * {
   font-size: 30px;
   display: block;
+  width: 50px;
 }
 
 div, .some-class.some-class-2.some-class-3, div#about.main__info.main__info--blue {
@@ -8,6 +9,7 @@ div, .some-class.some-class-2.some-class-3, div#about.main__info.main__info--blu
   height: 300px;
   width: 200px;
   font-size: 20px;
+  margin-left: 10px;
 }
 
 h1, h2, h3 {

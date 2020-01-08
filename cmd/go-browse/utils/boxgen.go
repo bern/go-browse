@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"log"
+	"strconv"
 
 	"github.com/bern/go-browse/cmd/go-browse/models"
 )
@@ -12,10 +13,10 @@ func BuildLayoutTree(styleNode models.StyledNode) models.LayoutBox {
 	root := models.LayoutBox{}
 	switch styleNode.Display() {
 	case models.Block:
-		root = models.NewLayoutBox(models.BlockNode)
+		root = models.NewLayoutBox(models.BlockNode, &styleNode)
 		break
 	case models.Inline:
-		root = models.NewLayoutBox(models.InlineNode)
+		root = models.NewLayoutBox(models.InlineNode, &styleNode)
 		break
 	case models.None:
 		log.Fatal("the root node is set to display: none !!!")
@@ -56,6 +57,13 @@ func PrintLayoutBox(root models.LayoutBox, level int) {
 	case models.AnonymousBlock:
 		printedValue += "anonymous"
 	}
+
+	printedValue += " (" +
+		"x:" + strconv.Itoa(root.Dimensions.Content.X) +
+		" y:" + strconv.Itoa(root.Dimensions.Content.Y) +
+		" width:" + strconv.Itoa(root.Dimensions.Content.Width) +
+		" height:" + strconv.Itoa(root.Dimensions.Content.Height) +
+		")"
 
 	fmt.Println(printedValue)
 

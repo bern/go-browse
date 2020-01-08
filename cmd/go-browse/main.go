@@ -109,6 +109,15 @@ func generateLayoutTree(htmlPath, cssPath string) {
 	utils.PrintStyledNode(styleTree, 0)
 
 	layoutBox := utils.BuildLayoutTree(styleTree)
+	layoutBoxPtr := &layoutBox
+	layoutBoxPtr.Layout(models.Dimensions{
+		Content: models.Rectangle{
+			X:      0,
+			Y:      0,
+			Width:  1024,
+			Height: 768,
+		},
+	})
 
-	utils.PrintLayoutBox(layoutBox, 0)
+	utils.PrintLayoutBox(*layoutBoxPtr, 0)
 }
