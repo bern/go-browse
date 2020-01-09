@@ -27,10 +27,12 @@ func BuildLayoutTree(styleNode models.StyledNode) models.LayoutBox {
 	for _, child := range styleNode.Children {
 		switch child.Display() {
 		case models.Block:
-			root.Children = append(root.Children, BuildLayoutTree(child))
+			childTree := BuildLayoutTree(child)
+			root.Children = append(root.Children, &childTree)
 		case models.Inline:
 			children := root.GetInlineContainer().Children
-			children = append(children, BuildLayoutTree(child))
+			childTree := BuildLayoutTree(child)
+			children = append(children, &childTree)
 			root.Children = children
 		case models.None:
 			continue
@@ -68,6 +70,6 @@ func PrintLayoutBox(root models.LayoutBox, level int) {
 	fmt.Println(printedValue)
 
 	for _, child := range root.Children {
-		PrintLayoutBox(child, level+1)
+		PrintLayoutBox(*child, level+1)
 	}
 }

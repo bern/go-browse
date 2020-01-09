@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 )
@@ -153,7 +152,7 @@ type LayoutBox struct {
 	Dimensions Dimensions
 	BoxType    BoxType
 	Node       *StyledNode
-	Children   []LayoutBox
+	Children   []*LayoutBox
 }
 
 // NewLayoutBox is a constructor for a LayoutBox with a certain box type
@@ -161,7 +160,7 @@ func NewLayoutBox(boxType BoxType, node *StyledNode) LayoutBox {
 	return LayoutBox{
 		BoxType:  boxType,
 		Node:     node,
-		Children: make([]LayoutBox, 0),
+		Children: make([]*LayoutBox, 0),
 	}
 }
 
@@ -186,7 +185,6 @@ func (lb *LayoutBox) Layout(container Dimensions) {
 
 // LayoutBlock determines the dimensions of a LayoutBox of BoxType block
 func (lb *LayoutBox) LayoutBlock(container Dimensions) {
-	fmt.Println("a")
 	// Calculate the box's width based on the parent
 	lb.CalculateBlockWidth(container)
 
@@ -204,8 +202,6 @@ func (lb *LayoutBox) LayoutBlock(container Dimensions) {
 func (lb *LayoutBox) CalculateBlockWidth(container Dimensions) {
 	styledNode := lb.GetStyledNode()
 
-	fmt.Printf("%+v\n", styledNode)
-
 	width := "auto"
 	styledWidth := styledNode.value("width")
 	if styledWidth != nil {
@@ -216,8 +212,6 @@ func (lb *LayoutBox) CalculateBlockWidth(container Dimensions) {
 
 	marginLeft := styledNode.Lookup([]string{"margin-left", "margin"}, zero)
 	marginRight := styledNode.Lookup([]string{"margin-right", "margin"}, zero)
-
-	fmt.Println("marginLeft", marginLeft)
 
 	borderLeft := styledNode.Lookup([]string{"border-left-width", "border-left"}, zero)
 	borderRight := styledNode.Lookup([]string{"border-right-width", "border-right"}, zero)
@@ -256,7 +250,7 @@ func (lb *LayoutBox) CalculateBlockWidth(container Dimensions) {
 		}
 
 		if underflow >= 0 {
-			width = string(underflow)
+			width = strconv.Itoa(underflow)
 		} else {
 			width = zero
 			marginRight = string(convertToPixels(marginRight) + underflow)
@@ -285,8 +279,6 @@ func (lb *LayoutBox) CalculateBlockWidth(container Dimensions) {
 			Right: convertToPixels(marginRight),
 		},
 	}
-
-	fmt.Printf("%+v\n", lb.Dimensions)
 }
 
 func convertToPixels(s string) int {
@@ -321,7 +313,7 @@ func (s StyledNode) Lookup(fields []string, defaultVal string) string {
 // CalculateBlockPosition calculates the box's position based on the parent
 func (lb *LayoutBox) CalculateBlockPosition(container Dimensions) {
 	styledNode := lb.GetStyledNode()
-	d := lb.Dimensions
+	d := &lb.Dimensions
 
 	zero := "0"
 
@@ -340,11 +332,18 @@ func (lb *LayoutBox) CalculateBlockPosition(container Dimensions) {
 
 // LayoutBlockChildren performs all position and width calculations on box's childrenr
 func (lb *LayoutBox) LayoutBlockChildren() {
-	d := lb.Dimensions
+	d := &lb.Dimensions
 
-	for _, child := range lb.Children {
-		child.Layout(d)
-		d.Content.Height = d.Content.Height + child.Dimensions.MarginBox().Height
+	// for _, child := range lb.Children {
+	// 	childRef := &child
+	// 	childRef.Layout(*d)
+	// 	d.Content.Height = d.Content.Height + child.Dimensions.MarginBox().Height
+	// }
+
+	for i := 0; i < len(lb.Children); i++ {
+		child := lb.Children[i]
+		child.Layout(*d)
+		lb.Children[i] = child
 	}
 }
 
@@ -391,9 +390,10 @@ func (lb LayoutBox) GetInlineContainer() LayoutBox {
 		return lb
 	case BlockNode: // Blocks need to create an anonymous box to hold inline children
 		if len(lb.Children) == 0 || lb.Children[len(lb.Children)-1].BoxType != AnonymousBlock { // If the latest child isn't an anonymous box...
-			lb.Children = append(lb.Children, NewLayoutBox(AnonymousBlock, nil)) // make it so
+			anonBox := NewLayoutBox(AnonymousBlock, nil)
+			lb.Children = append(lb.Children, &anonBox) // make it so
 		}
-		return lb.Children[len(lb.Children)-1] // Return the latest child as the thing that will contain this incoming inline elemen
+		return *lb.Children[len(lb.Children)-1] // Return the latest child as the thing that will contain this incoming inline elemen
 	}
 
 	return lb // shouldn't happen

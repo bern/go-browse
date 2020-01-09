@@ -1,0 +1,19 @@
+div {
+  display: block;
+  font-size: 16px;
+  height: 300px;
+}
+
+.test__class--1 {
+  width: auto;
+}
+
+.test__class--2 {
+  border-left: 5px;
+  border-right: 5px;
+}
+
+.test__class--3 {
+  margin-left: 10px;
+  margin-right: 10px;
+}

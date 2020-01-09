@@ -13,10 +13,14 @@ func main() {
 	// tests.DrawSomething()
 	// createBasicTree()
 	// createBasicParser()
-	// parseHTMLFile("test_files/index1.html")
-	// parseCSSFile("test_files/styles1.css")
-	// generateStyleTree("test_files/index1.html", "test_files/styles1.css")
-	generateLayoutTree("test_files/index1.html", "test_files/styles1.css")
+	parseHTMLFile("test_files/index2.html")
+	fmt.Println()
+	parseCSSFile("test_files/styles2.css")
+	fmt.Println()
+	generateStyleTree("test_files/index2.html", "test_files/styles2.css")
+	fmt.Println()
+	generateLayoutTree("test_files/index2.html", "test_files/styles2.css")
+	//fmt.Println()
 }
 
 func createBasicTree() {
@@ -106,11 +110,9 @@ func generateLayoutTree(htmlPath, cssPath string) {
 
 	styleTree := utils.StyleTree(parentNode, stylesheet)
 
-	utils.PrintStyledNode(styleTree, 0)
-
-	layoutBox := utils.BuildLayoutTree(styleTree)
-	layoutBoxPtr := &layoutBox
-	layoutBoxPtr.Layout(models.Dimensions{
+	layoutTree := utils.BuildLayoutTree(styleTree)
+	layoutTreePtr := &layoutTree
+	layoutTreePtr.Layout(models.Dimensions{
 		Content: models.Rectangle{
 			X:      0,
 			Y:      0,
@@ -119,5 +121,5 @@ func generateLayoutTree(htmlPath, cssPath string) {
 		},
 	})
 
-	utils.PrintLayoutBox(*layoutBoxPtr, 0)
+	utils.PrintLayoutBox(*layoutTreePtr, 0)
 }
