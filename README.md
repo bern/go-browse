@@ -14,6 +14,7 @@ This implementation is currently (and may remain) incomplete. Here are some feat
 - [ ] Support for percentage-based length calculations
 - [ ] Support for partial HTML
 - [ ] Correct error-handling for incorrect CSS rules/properties
+- [ ] Parallelize the layout process for adjacent child elements
 
 ## Instructions
 
